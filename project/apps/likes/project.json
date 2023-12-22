@@ -1,0 +1,53 @@
+{
+  "name": "likes",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/likes/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "target": "node",
+        "compiler": "tsc",
+        "outputPath": "dist/apps/likes",
+        "main": "apps/likes/src/main.ts",
+        "tsConfig": "apps/likes/tsconfig.app.json",
+        "assets": ["apps/likes/src/assets"],
+        "webpackConfig": "apps/likes/webpack.config.js"
+      },
+      "configurations": {
+        "development": {},
+        "production": {}
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "likes:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "likes:build:development"
+        },
+        "production": {
+          "buildTarget": "likes:build:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/likes/jest.config.ts"
+      }
+    }
+  },
+  "tags": []
+}
