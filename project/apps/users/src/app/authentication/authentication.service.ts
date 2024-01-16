@@ -1,19 +1,19 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { BlogUserRepository } from '../blog-user/blog-user.repository';
-import { CreateUserDTO } from './dto/create-user.dto';
+import { CreateUserDto } from './dto/create-user.dto';
 import {
   AUTH_USER_EXISTS,
   AUTH_USER_NOT_FOUND,
   AUTH_USER_PASSWORD_WRONG,
 } from './authentication.const';
 import { BlogUserEntity } from '../blog-user/blog-user.entity';
-import { LoginUserDTO } from './dto/login-user.dto';
+import { LoginUserDto } from './dto/login-user.dto';
 
 @Injectable()
 export class AuthenticationService {
   constructor(private readonly blogUserRepository: BlogUserRepository) {}
 
-  public async register(dto: CreateUserDTO) {
+  public async register(dto: CreateUserDto) {
     const { email, name, password, avatarUrl } = dto;
 
     const existedUser = await this.blogUserRepository.findByEmail(email);
@@ -32,7 +32,7 @@ export class AuthenticationService {
     return this.blogUserRepository.save(userEntity);
   }
 
-  public async verifyUser(dto: LoginUserDTO) {
+  public async verifyUser(dto: LoginUserDto) {
     const { email, password } = dto;
 
     const existedUser = await this.blogUserRepository.findByEmail(email);
