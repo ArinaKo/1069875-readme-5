@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import appConfig from './app.config';
 
 const ENV_USERS_FILE_PATH = 'apps/users/users.dev.env';
 
@@ -9,7 +10,7 @@ const ENV_USERS_FILE_PATH = 'apps/users/users.dev.env';
       isGlobal: true,
       cache: true,
       envFilePath: ENV_USERS_FILE_PATH,
-      load: [],
+      load: [appConfig],
     }),
   ],
 })
