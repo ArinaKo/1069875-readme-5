@@ -12,6 +12,16 @@ export abstract class BaseMongoRepository<
     private readonly createEntity: (document: DocumentType) => EntityType
   ) {}
 
+  protected createEntityFromDocument(
+    document: DocumentType
+  ): EntityType | null {
+    if (!document) {
+      return null;
+    }
+
+    return this.createEntity(document.toObject({ versionKey: false }));
+  }
+
   public async findById(id: EntityType['id']): Promise<EntityType | null> {
     const document = await this.model.findById(id).exec();
 
@@ -19,7 +29,7 @@ export abstract class BaseMongoRepository<
       return null;
     }
 
-    return this.createEntity(document.toObject({ versionKey: false }));
+    return this.createEntityFromDocument(document);
   }
 
   public async save(entity: EntityType): Promise<EntityType> {
