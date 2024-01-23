@@ -1,4 +1,8 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  NotFoundException,
+  Injectable,
+} from '@nestjs/common';
 import { BlogUserRepository } from '../blog-user/blog-user.repository';
 import { CreateUserDto } from './dto/create-user.dto';
 import {
@@ -38,7 +42,7 @@ export class AuthenticationService {
     const existedUser = await this.blogUserRepository.findByEmail(email);
 
     if (!existedUser) {
-      throw new ConflictException(AUTH_USER_NOT_FOUND);
+      throw new NotFoundException(AUTH_USER_NOT_FOUND);
     }
 
     if (!(await existedUser.comparePassword(password))) {
@@ -49,6 +53,12 @@ export class AuthenticationService {
   }
 
   public async getUser(id: string) {
-    return this.blogUserRepository.findById(id);
+    const existUser = await this.blogUserRepository.findById(id);
+
+    if (!existUser) {
+      throw new NotFoundException(`User with id ${id} not found`);
+    }
+
+    return existUser;
   }
 }
