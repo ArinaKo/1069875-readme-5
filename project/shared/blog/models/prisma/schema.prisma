@@ -15,6 +15,7 @@ model Post {
   title       String?
   description String?
   content     String
+  tags        Tag[]
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
   userId      String   @map("user_id")
@@ -34,4 +35,13 @@ model Type {
 
   @@index([title])
   @@map("types")
+}
+
+model Tag {
+  id    String @id @default(uuid())
+  title String
+  posts Post[]
+
+  @@index([title])
+  @@map("tags")
 }
