@@ -9,3 +9,18 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Post {
+  id String @id @default(uuid())
+  title       String?
+  description String?
+  content     String
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  userId      String   @map("user_id")
+  originalId  String?  @unique @map("original_id")
+  original    Post?    @relation("RepostHistory", fields: [originalId], references: [id])
+  repost      Post?    @relation("RepostHistory")
+
+  @@map("posts")
+}
