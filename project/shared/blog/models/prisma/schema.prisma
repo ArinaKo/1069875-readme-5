@@ -1,0 +1,72 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../../../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Post {
+  id          String    @id @default(uuid())
+  title       String?
+  description String?
+  content     String
+  status      String
+  tags        Tag[]
+  comments    Comment[]
+  likes       Like[]
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  userId      String    @map("user_id")
+  type        Type      @relation(fields: [typeName], references: [title])
+  typeName    String    @map("type")
+  originalId  String?   @unique @map("original_id")
+  original    Post?     @relation("RepostHistory", fields: [originalId], references: [id])
+  repost      Post?     @relation("RepostHistory")
+
+  @@map("posts")
+}
+
+model Type {
+  id    String @id @default(uuid())
+  title String @unique
+  posts Post[]
+
+  @@index([title])
+  @@map("types")
+}
+
+model Tag {
+  id    String @id @default(uuid())
+  title String
+  posts Post[]
+
+  @@index([title])
+  @@map("tags")
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  message   String
+  userId    String   @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  postId    String   @map("post_id")
+
+  @@index([postId])
+  @@map("comments")
+}
+
+model Like {
+  postId String
+  userId String
+  Post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@id([postId, userId])
+  @@map("likes")
+}
