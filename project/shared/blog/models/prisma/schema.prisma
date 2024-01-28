@@ -42,8 +42,7 @@ model Type {
 }
 
 model Tag {
-  id    String @id @default(uuid())
-  title String
+  title String @id
   posts Post[]
 
   @@index([title])

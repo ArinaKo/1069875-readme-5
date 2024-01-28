@@ -21,12 +21,13 @@ const TypeIds = [
   'fd6112bd-da77-40c8-95b1-cd56f8275e30',
   'a49a89b8-0e02-4e05-8c66-09d59fcbba73',
 ];
-const TagsIds = [
-  '2bc60958-b919-452c-b579-034159f6bf68',
-  '7e0f7f02-e091-4071-b0ca-67a3d9175755',
-  '260cdad1-3ee9-49e6-80a1-95079798fd20',
-  '7cb60b30-b88c-4ba1-8666-49c0bd63a573',
-  '3ee78b2b-6514-4ecf-a293-e084b02f317c',
+
+const Tags = [
+  'happy',
+  'useful',
+  'swag',
+  'yolo',
+  'life',
 ];
 
 function getTypes() {
@@ -36,16 +37,6 @@ function getTypes() {
     { id: TypeIds[2], title: 'quote' },
     { id: TypeIds[3], title: 'photo' },
     { id: TypeIds[4], title: 'link' },
-  ];
-}
-
-function getTags() {
-  return [
-    { id: TagsIds[0], title: 'happy' },
-    { id: TagsIds[1], title: 'useful' },
-    { id: TagsIds[2], title: 'swag' },
-    { id: TagsIds[3], title: 'yolo' },
-    { id: TagsIds[4], title: 'life' },
   ];
 }
 
@@ -60,7 +51,7 @@ function getPosts() {
         connect: { id: TypeIds[0] },
       },
       tags: {
-        connect: [{ id: TagsIds[0] }, { id: TagsIds[1] }],
+        connect: [{ title: Tags[0] }, { title: Tags[1] }],
       },
       comments: [
         {
@@ -105,7 +96,7 @@ function getPosts() {
         connect: { id: TypeIds[1] },
       },
       tags: {
-        connect: [{ id: TagsIds[2] }, { id: TagsIds[3] }],
+        connect: [{ title: Tags[2] }, {title: Tags[3] }],
       },
       likes: [
         {
@@ -123,7 +114,7 @@ function getPosts() {
         connect: { id: TypeIds[2] },
       },
       tags: {
-        connect: [{ id: TagsIds[4] }],
+        connect: [{ title: Tags[4] }],
       },
       likes: [
         {
@@ -165,7 +156,7 @@ function getPosts() {
         connect: { id: TypeIds[4] },
       },
       tags: {
-        connect: [{ id: TagsIds[0] }, { id: TagsIds[4] }],
+        connect: [{ title: Tags[0] }, { title: Tags[4] }],
       },
       comments: [
         {
@@ -195,14 +186,12 @@ async function seedDb(prismaClient: PrismaClient) {
     });
   }
 
-  const mockTags = getTags();
-  for (const tag of mockTags) {
+  for (const tag of Tags) {
     await prismaClient.tag.upsert({
-      where: { id: tag.id },
+      where: { title: tag },
       update: {},
       create: {
-        id: tag.id,
-        title: tag.title,
+        title: tag,
       },
     });
   }
