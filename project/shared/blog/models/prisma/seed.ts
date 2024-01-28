@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { PostType } from '../../../app/types/src/index';
 
 const UsersIds = [
   '658170cbb954e9f5b905ccf4',
@@ -14,13 +15,6 @@ const PostsIds = [
   'fca47f7b-b05d-46f1-a83e-080a1d576796',
   '9cad67f3-cf34-4683-ab89-c2787dc014b9',
 ];
-const TypeIds = [
-  '39614113-7ad5-45b6-8093-06455437e1e2',
-  'efd775e2-df55-4e0e-a308-58249f5ea202',
-  'c3783039-5255-4296-8696-5e22db623e28',
-  'fd6112bd-da77-40c8-95b1-cd56f8275e30',
-  'a49a89b8-0e02-4e05-8c66-09d59fcbba73',
-];
 
 const Tags = [
   'happy',
@@ -28,17 +22,7 @@ const Tags = [
   'swag',
   'yolo',
   'life',
-];
-
-function getTypes() {
-  return [
-    { id: TypeIds[0], title: 'video' },
-    { id: TypeIds[1], title: 'text' },
-    { id: TypeIds[2], title: 'quote' },
-    { id: TypeIds[3], title: 'photo' },
-    { id: TypeIds[4], title: 'link' },
-  ];
-}
+] as const;
 
 function getPosts() {
   return [
@@ -47,9 +31,7 @@ function getPosts() {
       title: 'Nice content',
       content: 'https://youtu.be/dQw4w9WgXcQ?si=k98j8ZsqD3xiqFZU',
       userId: UsersIds[0],
-      type: {
-        connect: { id: TypeIds[0] },
-      },
+      type: PostType.Video,
       tags: {
         connect: [{ title: Tags[0] }, { title: Tags[1] }],
       },
@@ -92,9 +74,7 @@ function getPosts() {
                 Yours is the Earth and everything that’s in it,
                 And—which is more—you’ll be a Man, my son!`,
       userId: UsersIds[0],
-      type: {
-        connect: { id: TypeIds[1] },
-      },
+      type: PostType.Text,
       tags: {
         connect: [{ title: Tags[2] }, {title: Tags[3] }],
       },
@@ -110,9 +90,7 @@ function getPosts() {
       content:
         'Опасайтесь багов в приведенном выше коде; я только доказал корректность, но не запускал его.',
       userId: UsersIds[1],
-      type: {
-        connect: { id: TypeIds[2] },
-      },
+      type: PostType.Quote,
       tags: {
         connect: [{ title: Tags[4] }],
       },
@@ -129,9 +107,7 @@ function getPosts() {
       id: PostsIds[3],
       content: 'image.jpg',
       userId: UsersIds[1],
-      type: {
-        connect: { id: TypeIds[3] },
-      },
+      type: PostType.Photo,
       comments: [
         {
           message: 'Это действительно отличное фото!',
@@ -152,9 +128,7 @@ function getPosts() {
       description: 'Мой любимый сайт',
       content: 'https://htmlacademy.ru/',
       userId: UsersIds[1],
-      type: {
-        connect: { id: TypeIds[4] },
-      },
+      type: PostType.Link,
       tags: {
         connect: [{ title: Tags[0] }, { title: Tags[4] }],
       },
@@ -174,18 +148,6 @@ function getPosts() {
 }
 
 async function seedDb(prismaClient: PrismaClient) {
-  const mockTypes = getTypes();
-  for (const type of mockTypes) {
-    await prismaClient.type.upsert({
-      where: { id: type.id },
-      update: {},
-      create: {
-        id: type.id,
-        title: type.title,
-      },
-    });
-  }
-
   for (const tag of Tags) {
     await prismaClient.tag.upsert({
       where: { title: tag },
@@ -205,6 +167,7 @@ async function seedDb(prismaClient: PrismaClient) {
         description: post.description ? post.description : undefined,
         content: post.content,
         status: 'published',
+        isRepost: false,
         userId: post.userId,
         type: post.type,
         tags: post.tags ?? undefined,

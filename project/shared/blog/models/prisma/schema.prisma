@@ -13,6 +13,7 @@ datasource db {
 
 model Post {
   id          String    @id @default(uuid())
+  type        String
   title       String?
   description String?
   content     String
@@ -20,25 +21,16 @@ model Post {
   tags        Tag[]
   comments    Comment[]
   likes       Like[]
+  publishDate DateTime  @default(now()) @map("publish_date")
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime  @updatedAt @map("updated_at")
   userId      String    @map("user_id")
-  type        Type      @relation(fields: [typeName], references: [title])
-  typeName    String    @map("type")
   originalId  String?   @unique @map("original_id")
   original    Post?     @relation("RepostHistory", fields: [originalId], references: [id])
   repost      Post?     @relation("RepostHistory")
+  isRepost    Boolean
 
   @@map("posts")
-}
-
-model Type {
-  id    String @id @default(uuid())
-  title String @unique
-  posts Post[]
-
-  @@index([title])
-  @@map("types")
 }
 
 model Tag {
