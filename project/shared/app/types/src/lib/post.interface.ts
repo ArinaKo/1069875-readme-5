@@ -1,7 +1,7 @@
-import { Comment } from "./comment.interface";
-import { PostStatus } from "./post-status.enum";
-import { PostType } from "./post-type.enum";
-import { Tag } from "./tag.interface";
+import { Comment } from './comment.interface';
+import { PostStatus } from './post-status.enum';
+import { PostType } from './post-type.enum';
+import { Tag } from './tag.interface';
 
 export interface Post {
   id?: string;
@@ -13,9 +13,10 @@ export interface Post {
   userId: string;
   tags: Tag[];
   comments: Comment[];
-  likesNumber: number;
+  likes: number;
   isRepost: boolean;
   originalId?: string;
+  publishDate?: Date;
   createdAt?: Date;
   updatedAt?: Date;
 }

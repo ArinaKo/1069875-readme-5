@@ -5,3 +5,4 @@ export * from './lib/post-status.enum';
 export * from './lib/tag.interface';
 export * from './lib/comment.interface';
 export * from './lib/post.interface';
+export * from './lib/pagination.interface';
