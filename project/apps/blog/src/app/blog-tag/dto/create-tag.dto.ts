@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class CreateCategoryDto {
+export class CreateTagDto {
   @ApiProperty({
     description: 'Uniq tag name',
     example: 'yolo',
