@@ -1,4 +1,4 @@
-import { PostStatus, PostType, Tag } from '@project/shared/app/types';
+import { PostStatus, PostType } from '@project/shared/app/types';
 
 export class CreatePostDto {
   public type: PostType;
@@ -7,7 +7,7 @@ export class CreatePostDto {
   public content: string;
   public status: PostStatus;
   public userId: string;
-  public tags: Tag[];
+  public tags: string[];
   public isRepost: boolean;
   public originalId?: string;
 }

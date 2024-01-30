@@ -1,16 +1,15 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
-
-import { PaginationResult, Post, PostStatus, PostType } from '@project/shared/app/types';
+import { PaginationResult, Post } from '@project/shared/app/types';
 import { PrismaClientService } from '@project/shared/blog/models';
 import { BasePostgresRepository } from '@project/shared/core';
 import { BlogPostEntity } from './blog-post.entity';
 
 @Injectable()
-export class BlogPostRepository extends BasePostgresRepository<BlogPostEntity, Post> {
-  constructor(
-    protected readonly client: PrismaClientService,
-  ) {
+export class BlogPostRepository extends BasePostgresRepository<
+  BlogPostEntity,
+  Post
+> {
+  constructor(protected readonly client: PrismaClientService) {
     super(client, BlogPostEntity.fromObject);
   }
 
@@ -21,15 +20,20 @@ export class BlogPostRepository extends BasePostgresRepository<BlogPostEntity, P
       data: {
         ...pojoEntity,
         tags: {
-          connect: pojoEntity.tags
+          connectOrCreate: pojoEntity.tags.map(({ title }) => {
+            return {
+              where: { title },
+              create: { title },
+            };
+          }),
         },
         comments: {
-          connect: []
+          connect: [],
         },
         likes: {
-          connect: []
+          connect: [],
         },
-      }
+      },
     });
 
     entity.id = record.id;
@@ -39,8 +43,8 @@ export class BlogPostRepository extends BasePostgresRepository<BlogPostEntity, P
   public async deleteById(id: string): Promise<void> {
     await this.client.post.delete({
       where: {
-        id
-      }
+        id,
+      },
     });
   }
 
@@ -53,17 +57,20 @@ export class BlogPostRepository extends BasePostgresRepository<BlogPostEntity, P
         tags: true,
         comments: true,
         likes: true,
-      }
+      },
     });
 
-    if (! record) {
+    if (!record) {
       throw new NotFoundException(`Post with id ${id} not found.`);
     }
 
     return this.createEntityFromDocument(record as Post);
   }
 
-  public async update(id: string, entity: BlogPostEntity): Promise<BlogPostEntity> {
+  public async update(
+    id: string,
+    entity: BlogPostEntity
+  ): Promise<BlogPostEntity> {
     const pojoEntity = entity.toPOJO();
     const updatedPost = await this.client.post.update({
       where: { id },
@@ -74,17 +81,22 @@ export class BlogPostRepository extends BasePostgresRepository<BlogPostEntity, P
         status: pojoEntity.status,
         publishDate: pojoEntity.publishDate,
         tags: {
-          set: pojoEntity.tags,
-        }
+          deleteMany: {},
+          connectOrCreate: pojoEntity.tags.map(({ title }) => {
+            return {
+              where: { title },
+              create: { title },
+            };
+          }),
+        },
       },
       include: {
         tags: true,
         comments: true,
         likes: true,
-      }
+      },
     });
 
     return this.createEntityFromDocument(updatedPost as Post);
   }
-
 }

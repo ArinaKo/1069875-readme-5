@@ -1,6 +1,5 @@
-import { Post, PostType, PostStatus } from '@project/shared/app/types';
+import { Post, PostType, PostStatus, Tag } from '@project/shared/app/types';
 import { Entity } from '@project/shared/core';
-import { BlogTagEntity } from '../blog-tag/blog-tag.entity';
 import { BlogCommentEntity } from '../blog-comment/blog-comment.entity';
 import { BlogLikeEntity } from '../blog-like/blog-like.entity';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -13,7 +12,7 @@ export class BlogPostEntity implements Post, Entity<string, Post> {
   public content: string;
   public status: PostStatus;
   public userId: string;
-  public tags: BlogTagEntity[];
+  public tags: Tag[];
   public comments: BlogCommentEntity[];
   public likes: BlogLikeEntity[];
   public isRepost: boolean;
@@ -37,7 +36,7 @@ export class BlogPostEntity implements Post, Entity<string, Post> {
     this.updatedAt = data.updatedAt ?? undefined;
     this.likes = [];
     this.comments = [];
-    this.tags = data.tags.map((tag) => BlogTagEntity.fromObject(tag));
+    this.tags = data.tags;
 
     return this;
   }
@@ -58,26 +57,29 @@ export class BlogPostEntity implements Post, Entity<string, Post> {
       updatedAt: this.updatedAt,
       likes: [],
       comments: [],
-      tags: this.tags.map((tagEntity) => tagEntity.toPOJO()),
+      tags: this.tags,
     };
   }
 
   static fromObject(data: Post): BlogPostEntity {
-    return new BlogPostEntity()
-      .populate(data);
+    return new BlogPostEntity().populate(data);
   }
 
-  static fromDto(dto: CreatePostDto, tags: BlogTagEntity[]): BlogPostEntity {
+  static fromDto(dto: CreatePostDto): BlogPostEntity {
     const entity = new BlogPostEntity();
     entity.type = dto.type;
-    entity.title = dto.title ?? undefined ;
+    entity.title = dto.title ?? undefined;
     entity.description = dto.description ?? undefined;
     entity.content = dto.content;
     entity.status = dto.status;
     entity.userId = dto.userId;
     entity.isRepost = dto.isRepost;
     entity.originalId = dto.originalId ?? undefined;
-    entity.tags = tags;
+    entity.tags = dto.tags
+      ? dto.tags.map<Tag>((tag) => {
+          return { title: tag };
+        })
+      : [];
     entity.comments = [];
     entity.likes = [];
 
