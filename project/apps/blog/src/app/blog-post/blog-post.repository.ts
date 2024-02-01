@@ -80,7 +80,8 @@ export class BlogPostRepository extends BasePostgresRepository<
 
   public async update(
     id: string,
-    entity: BlogPostEntity
+    entity: BlogPostEntity,
+    newTags?: string[]
   ): Promise<BlogPostEntity> {
     const pojoEntity = entity.toPOJO();
     const updatedPost = await this.client.post.update({
@@ -91,15 +92,15 @@ export class BlogPostRepository extends BasePostgresRepository<
         description: pojoEntity.description,
         status: pojoEntity.status,
         publishDate: pojoEntity.publishDate,
-        tags: {
+        tags: newTags ? ({
           deleteMany: {},
-          connectOrCreate: pojoEntity.tags.map(({ title }) => {
+          connectOrCreate: newTags.map((title) => {
             return {
               where: { title },
               create: { title },
             };
           }),
-        },
+        }) : undefined,
       },
       include: {
         tags: true,
