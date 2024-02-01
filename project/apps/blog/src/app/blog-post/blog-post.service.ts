@@ -10,13 +10,13 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 export class BlogPostService {
   constructor(private readonly blogPostRepository: BlogPostRepository) {}
 
-  private async getAllPosts(
+  public async getAllPosts(
     query: BlogPostQuery
   ): Promise<PaginationResult<BlogPostEntity>> {
     return await this.blogPostRepository.find(query);
   }
 
-  private async getPost(id: string): Promise<BlogPostEntity> {
+  public async getPost(id: string): Promise<BlogPostEntity> {
     try {
       return await this.blogPostRepository.findById(id);
     } catch {
@@ -24,17 +24,21 @@ export class BlogPostService {
     }
   }
 
-  private async createPost(dto: CreatePostDto): Promise<BlogPostEntity> {
+  public async createPost(dto: CreatePostDto): Promise<BlogPostEntity> {
     const newPost = BlogPostEntity.fromDto(dto);
     await this.blogPostRepository.save(newPost);
     return newPost;
   }
 
-  private async updatePost(
+  public async updatePost(
     id: string,
     dto: UpdatePostDto
   ): Promise<BlogPostEntity> {
     const existsPost = await this.blogPostRepository.findById(id);
+    if (!existsPost) {
+      throw new NotFoundException(`Post with ID ${id} not found`);
+    }
+
     let hasChanges = false;
     let isSameTags = false;
 
@@ -59,7 +63,7 @@ export class BlogPostService {
     return this.blogPostRepository.update(id, existsPost, dto.tags);
   }
 
-  private async deletePost(id: string): Promise<void> {
+  public async deletePost(id: string): Promise<void> {
     try {
       await this.blogPostRepository.deleteById(id);
     } catch {
