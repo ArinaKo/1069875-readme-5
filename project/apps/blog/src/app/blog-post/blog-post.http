@@ -14,19 +14,82 @@ GET http://localhost:3000/api/posts/ab006803-0662-419d-914a-cbffd3251a5f HTTP/1.
 
 ###
 
-# Create a new post
+# Create a new video post
+POST http://localhost:3000/api/posts HTTP/1.1
+Content-Type: application/json
+
+{
+  "type": "video",
+  "title": "Импорт встроенных модулей. Протокол node:",
+  "content": "https://youtu.be/aY1E8jegel8?si=LHdoDa6hNhYgzJGv",
+  "userId": "658ede7600f80970fcf9e111",
+  "status": "published",
+  "isRepost": false,
+  "tags": ["check"]
+}
+
+###
+
+# Create a new text post
 POST http://localhost:3000/api/posts HTTP/1.1
 Content-Type: application/json
 
 {
   "type": "text",
-  "title": "Hello world 31337!",
-  "description": "Текст анонса",
-  "content": "Расширенный текст публикации",
+  "title": "Hello world 3133778!",
+  "description": "Текст анонса: текст, текст, текст, текст, текст, текст, текст, текст, текст, текст",
+  "content": "Расширенный текст публикации: текст публикации, текст публикации, текст публикации, текст публикации, текст публикации, текст публикации",
   "userId": "658ede7600f80970fcf9e111",
   "status": "published",
   "isRepost": false,
-  "tags": ["hello"]
+  "tags": ["check"]
+}
+
+###
+
+# Create a new quote post
+POST http://localhost:3000/api/posts HTTP/1.1
+Content-Type: application/json
+
+{
+  "type": "quote",
+  "description": "Академия",
+  "content": "Обучение - это марафон, а не спринт",
+  "userId": "658ede7600f80970fcf9e111",
+  "status": "published",
+  "isRepost": false,
+  "tags": ["check"]
+}
+
+###
+
+# Create a new photo post
+POST http://localhost:3000/api/posts HTTP/1.1
+Content-Type: application/json
+
+{
+  "type": "photo",
+  "content": "image.jpg",
+  "userId": "658ede7600f80970fcf9e111",
+  "status": "published",
+  "isRepost": false,
+  "tags": ["check"]
+}
+
+###
+
+# Create a new link post
+POST http://localhost:3000/api/posts HTTP/1.1
+Content-Type: application/json
+
+{
+  "type": "link",
+  "description": "Node.js и Nest.js. Микросервисная архитектура",
+  "content": "https://htmlacademy.ru/intensive/nodejs-2",
+  "userId": "658ede7600f80970fcf9e111",
+  "status": "published",
+  "isRepost": false,
+  "tags": ["check"]
 }
 
 ###
