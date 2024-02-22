@@ -1,4 +1,5 @@
 import { ClassTransformOptions, plainToInstance } from 'class-transformer';
+import { ValidationError } from 'class-validator';
 
 export function fillDto<T, V>(
   DtoClass: new () => T,
@@ -32,4 +33,14 @@ export function getMongoConnectionString({
   authDatabase,
 }): string {
   return `mongodb://${username}:${password}@${host}:${port}/${databaseName}?authSource=${authDatabase}`;
+}
+
+export function reduceValidationErrors(
+  errors: ValidationError[]
+) {
+  return errors.map(({ property, value, constraints }) => ({
+    property,
+    value,
+    messages: constraints ? Object.values(constraints) : [],
+  }));
 }
