@@ -17,6 +17,8 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { fillDto } from '@project/shared/helpers';
 import { BlogPostRdo } from './rdo/blog-post.rdo';
 import { BlogPostWithPaginationRdo } from './rdo/blog-post-with-pagination.rdo';
+import { PostDtoValidationPipe } from '@project/shared/core';
+import { CreateDtoListing, UpdateDtoListing } from './blog-post.const';
 
 @ApiTags('blog-posts')
 @Controller('posts')
@@ -44,7 +46,7 @@ export class BlogPostController {
     description: 'The new post has been successfully created',
   })
   @Post('/')
-  public async create(@Body() dto: CreatePostDto) {
+  public async create(@Body(new PostDtoValidationPipe(CreateDtoListing)) dto: CreatePostDto) {
     const newPost = await this.blogPostService.createPost(dto);
     return fillDto(BlogPostRdo, newPost.toPOJO());
   }
@@ -66,7 +68,7 @@ export class BlogPostController {
     description: 'Post has been successfully updated',
   })
   @Patch('/:id')
-  public async update(@Param('id') id: string, @Body() dto: UpdatePostDto) {
+  public async update(@Param('id') id: string, @Body(new PostDtoValidationPipe(UpdateDtoListing)) dto: UpdatePostDto) {
     const updatedPost = await this.blogPostService.updatePost(id, dto);
     return fillDto(BlogPostRdo, updatedPost.toPOJO());
   }
