@@ -44,3 +44,7 @@ export function reduceValidationErrors(
     messages: constraints ? Object.values(constraints) : [],
   }));
 }
+
+export function transformObjectValuesToString(items: object) {
+  return Object.values(items).join(', ');
+}

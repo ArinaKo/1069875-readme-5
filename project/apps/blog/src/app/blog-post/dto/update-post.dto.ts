@@ -1,21 +1,46 @@
 import { PostStatus } from '@project/shared/app/types';
-import { ArrayMaxSize, IsArray, IsDate, IsEnum, IsOptional, IsString, IsUrl, Length, Matches, MaxLength } from 'class-validator';
+import {
+  ArrayMaxSize,
+  IsArray,
+  IsDate,
+  IsEnum,
+  IsOptional,
+  IsString,
+  IsUrl,
+  Length,
+  Matches,
+  MaxLength,
+} from 'class-validator';
+import {
+  ContentLength,
+  DescriptionLength,
+  MAX_TAGS_NUMBER,
+  TagLength,
+  TitleLength,
+  VIDEO_LINK_PATTERN,
+} from '../blog-post.const';
+import { PostValidationMessage } from '../messages/post-validation.messages';
 
 class BasePostDto {
+  @IsString()
   @IsOptional()
   public title?: string;
 
+  @IsString()
   @IsOptional()
   public description?: string;
 
-  @IsEnum(PostStatus)
+  @IsEnum(PostStatus, { message: PostValidationMessage.status.invalidFormat })
   @IsOptional()
   public status?: PostStatus;
 
   @IsArray()
-  @ArrayMaxSize(8)
-  @IsString({each: true})
-  @Length(3, 10, {each: true})
+  @ArrayMaxSize(MAX_TAGS_NUMBER, { message: PostValidationMessage.tags.value })
+  @IsString({ each: true })
+  @Length(TagLength.Min, TagLength.Max, {
+    each: true,
+    message: PostValidationMessage.tags.invalidItems,
+  })
   @IsOptional()
   public tags?: string[];
 
@@ -25,56 +50,74 @@ class BasePostDto {
 }
 
 export class UpdateVideoPostDto extends BasePostDto {
-  @Length(20, 50)
-  public title: string;
+  @Length(TitleLength.Min, TitleLength.Max, {
+    message: PostValidationMessage.title.length,
+  })
+  public title?: string;
 
   @IsString()
-  @Matches('/^(?:https?:\/\/)?(?:m\.|www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/')
+  @Matches(VIDEO_LINK_PATTERN, {
+    message: PostValidationMessage.content.value.videoPost,
+  })
   @IsOptional()
-  public content: string;
+  public content?: string;
 }
 
 export class UpdateTextPostDto extends BasePostDto {
-  @Length(20, 50)
-  public title: string;
+  @Length(TitleLength.Min, TitleLength.Max, {
+    message: PostValidationMessage.title.length,
+  })
+  public title?: string;
 
-  @Length(50, 255)
-  public description: string;
+  @Length(DescriptionLength.TextPost.Min, DescriptionLength.TextPost.Max, {
+    message: PostValidationMessage.description.length.textPost,
+  })
+  public description?: string;
 
-  @Length(100, 1024)
+  @IsString()
+  @Length(ContentLength.TextPost.Min, ContentLength.TextPost.Max, {
+    message: PostValidationMessage.content.length.textPost,
+  })
   @IsOptional()
-  public content: string;
+  public content?: string;
 }
 
 export class UpdateQuotePostDto extends BasePostDto {
-  @Length(3, 50)
-  public description: string;
+  @Length(DescriptionLength.QuotePost.Min, DescriptionLength.QuotePost.Max, {
+    message: PostValidationMessage.description.length.quotePost,
+  })
+  public description?: string;
 
-  @Length(20, 300)
+  @IsString()
+  @Length(ContentLength.QuotePost.Min, ContentLength.QuotePost.Max, {
+    message: PostValidationMessage.content.length.quotePost,
+  })
   @IsOptional()
-  public content: string;
+  public content?: string;
 }
 
 export class UpdatePhotoPostDto extends BasePostDto {
   @IsString()
   @IsOptional()
-  public content: string;
+  public content?: string;
 }
 
 export class UpdateLinkPostDto extends BasePostDto {
-  @MaxLength(50)
+  @MaxLength(DescriptionLength.LinkPost.Max, {
+    message: PostValidationMessage.description.length.linkPost,
+  })
   @IsOptional()
-  public description: string;
+  public description?: string;
 
   @IsString()
   @IsUrl()
   @IsOptional()
-  public content: string;
+  public content?: string;
 }
 
-export type UpdatePostDto = (UpdateVideoPostDto
+export type UpdatePostDto =
+  | UpdateVideoPostDto
   | UpdateTextPostDto
   | UpdateQuotePostDto
   | UpdatePhotoPostDto
-  | UpdateLinkPostDto);
-
+  | UpdateLinkPostDto;
